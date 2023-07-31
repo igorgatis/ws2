@@ -19,4 +19,4 @@
 
 cmd/serve/serve
 
-htdocs/ws2\.wasm
+docs/ws2\.wasm

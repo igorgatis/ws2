@@ -12,7 +12,7 @@ import (
 
 var (
 	listen      = flag.String("listen", ":8080", "listen address")
-	dir         = flag.String("dir", "htdocs", "directory to serve")
+	dir         = flag.String("dir", "docs", "directory to serve")
 	openBrowser = flag.Bool("openBrowser", false, "open a browser while serving")
 )
 
