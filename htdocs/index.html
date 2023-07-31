@@ -10,7 +10,7 @@
   crossorigin=""/>
   	<link rel="stylesheet" href="https://unpkg.com/leaflet.pm@latest/dist/leaflet.pm.css" />
 	<style>
-		#mapid { height: 680px; }
+		#mapid { height: 94vh; }
 	</style>
 	<!-- Place this tag in your head or just before your close body tag. -->
 	<script async defer src="https://buttons.github.io/buttons.js"></script>
@@ -27,58 +27,46 @@
 	<script src="wasm_exec.js"></script>
 
 
-	<div class="container">
-		<div class="row justify-content-md-center">
-				<div class="col">
-					<h3>S2 cover map viewer using Go code compiled into WASM</h3>
-				</div>
-				<div class="col-md-auto">
-						<a class="github-button" href="https://github.com/akhenakh/ws2/fork" data-size="large" aria-label="Fork akhenakh/ws2 on GitHub">Fork</a>
-
-				</div>
-
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col">
+				<h3>S2 cover map viewer using Go code compiled into WASM</h3>
+			</div>
+			<div class="col-md-auto">
+				<a class="github-button" href="https://github.com/igorgatis/ws2/fork" data-size="large" aria-label="Fork akhenakh/ws2 on GitHub">Fork</a>
+			</div>
 		</div>
 		<div class="row">
-
 			<div class="col"><div id="mapid"></div></div>
-			<div class="col-lg-2">
+			<div class="col-md-2">
 				<div class="form-group">
 					<label for="minRange">Minimum Level</label>
 					<output name="minOutputName" id="minOutputId">1</output>
 					<input type="range" class="custom-range" min="1" max="30" value="1" id="minRange" oninput="minOutputId.value = minRange.value">
 
 					<label for="maxRange">Maximum Level</label>
-					<output name="maxOutputName" id="maxOutputId">10</output>
-					<input type="range" class="custom-range" min="1" max="30" value="10" id="maxRange" oninput="maxOutputId.value = maxRange.value">
+					<output name="maxOutputName" id="maxOutputId">30</output>
+					<input type="range" class="custom-range" min="1" max="30" value="30" id="maxRange" oninput="maxOutputId.value = maxRange.value">
 
 					<label for="maxCellsRange">Maximum Cells</label>
-					<output name="maxCellsOutputName" id="maxCellsOutputId">600</output>
-					<input type="range" class="custom-range" min="1" max="600" value="600" id="maxCellsRange" oninput="maxCellsOutputId.value = maxCellsRange.value">
+					<output name="maxCellsOutputName" id="maxCellsOutputId">100</output>
+					<input type="range" class="custom-range" min="1" max="400" value="100" id="maxCellsRange" oninput="maxCellsOutputId.value = maxCellsRange.value">
 					<input type="radio" id="icover" name="cover" value="in">
 					<label for="icover">Inside</label>
 					<input type="radio" id="ocover" name="cover" value="out" checked>
 					<label for="ocover">Outside</label><br>
 					<button onClick="coverShape()" id="coverButton"  class="btn btn-secondary" >Cover</button>
 				</div>
-
 				<div class="form-group">
 					<label for="cells_input">Insert cells IDs</label>
 					<textarea class="form-control" placeholder="47e665 or 2/0333030302 or 5180939472010739712" id="cells_input" rows="5"></textarea>
-					</div>
+					<a href='#' id='exportLink' style="visibility:hidden">Export Cells to GeoJSON</a>
+				</div>
 				<button onclick="displayCells()" id="cellsButton" class="btn btn-secondary">Display Cells</button>
 			</div>
-
-
 		</div>
-		<div>
-			<span id="cell_count" class="badge badge-pill badge-primary">0</span>
-			<a href='#' id='exportLink' style="visibility:hidden">Export Cells to GeoJSON</a>
-		</div>
-		<div class="row" id="cell_list">
-
 		</div>
 	</div>
-
 
 	<script>
 		var geoLayer = null;
@@ -109,17 +97,29 @@
                 }
             }
 
-			gj = shapeLayer.toGeoJSON();
-			if (gj.type == "Feature") {
-				// check if it could be a circle
-				if (shapeLayer.options.radius !== undefined) {
-					circlecell(gj.geometry.coordinates[0], gj.geometry.coordinates[1], shapeLayer.options.radius);
-					return;
-				}
+			if (shapeLayer != null) {
+				gj = shapeLayer.toGeoJSON();
+				if (gj.type == "Feature") {
+					// check if it could be a circle
+					if (shapeLayer.options.radius !== undefined) {
+						circlecell(gj.geometry.coordinates[0], gj.geometry.coordinates[1], shapeLayer.options.radius);
+						return;
+					}
 
-				geocell(JSON.stringify(shapeLayer.toGeoJSON(gj)));
-			} else {
-				geofeaturescell(JSON.stringify(shapeLayer.toGeoJSON(gj)));
+					geocell(JSON.stringify(shapeLayer.toGeoJSON(gj)));
+				} else {
+					geofeaturescell(JSON.stringify(shapeLayer.toGeoJSON(gj)));
+				}
+			}
+		}
+		function handleUrlParams() {
+			if (window.location.hash) {
+				let params = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+				let cells = params.get("cells");
+				if (cells) {
+					document.getElementById("cells_input").value = cells;
+					displayCells();
+				}
 			}
 		}
 
@@ -133,6 +133,7 @@
 		const go = new Go();
 		WebAssembly.instantiateStreaming(fetch("ws2.wasm"), go.importObject).then((result) => {
 			go.run(result.instance);
+			handleUrlParams();
 			document.getElementById("coverButton").disabled = false;
 			document.getElementById("cellsButton").disabled = false;
 		});
@@ -149,7 +150,7 @@
 		var osmUrl='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 		var osmAttrib='Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors';
 		var osm = new L.TileLayer(osmUrl, {minZoom: 2, maxZoom: 18, attribution: osmAttrib});
-		mymap.setView(new L.LatLng(48.862884, 2.343975), 11);
+		mymap.setView(new L.LatLng(-8.063160, -34.871148), 11);
 		mymap.addLayer(osm);
 
 		// define toolbar options
@@ -211,25 +212,25 @@
 		var updateui = function() {
 			d = JSON.parse(data);
 			var res = [];
-			geoLayer = L.geoJSON(d, {
-				style: function(feature) {
-					return {color: "#ff0000", weight: 2, fillOpacity: 0.15};
-       			},
-				onEachFeature: function(feature, layer) {
-					if (feature.properties) {
-        				layer.bindPopup(feature.properties.id + "<br>" + feature.properties.uid +  "<br>" + feature.properties.str + "<br>Level " + feature.properties.level);
-					}
-					res.push(feature.properties.id);
-				},
-			}).addTo(mymap);
-			mymap.fitBounds(geoLayer.getBounds());
-			document.getElementById("cell_count").textContent = res.length;
-			document.getElementById("cell_list").innerHTML = "<p><small>" + res.join(", ") + "</small></p>";
-			if (res.length > 0 ) {
-				document.getElementById("exportLink").style.visibility = "visible";
+			if (d.features.length > 0) {
+				geoLayer = L.geoJSON(d, {
+					style: function(feature) {
+						return {color: "#ff0000", weight: 2, fillOpacity: 0.15};
+					},
+					onEachFeature: function(feature, layer) {
+						if (feature.properties) {
+							layer.bindPopup(feature.properties.id + "<br>" + feature.properties.uid +  "<br>" + feature.properties.str + "<br>Level " + feature.properties.level);
+						}
+						res.push(feature.properties.id);
+					},
+				}).addTo(mymap);
+				mymap.fitBounds(geoLayer.getBounds());
 			}
+			const cellText = res.join(",");
+			window.location.hash = "cells=" + cellText;
+			document.getElementById("cells_input").value = cellText;
+			document.getElementById("exportLink").style.visibility = res.length > 0 ?  "visible" : "hidden";
 		}
-
 	</script>
 </body>
 </html>
