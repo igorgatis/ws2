@@ -38,29 +38,28 @@
 		</div>
 		<div class="row">
 			<div class="col"><div id="mapid"></div></div>
-			<div class="col-md-2">
+			<div class="col-lg-2">
 				<div class="form-group">
-					<label for="minRange">Minimum Level</label>
-					<output name="minOutputName" id="minOutputId">1</output>
-					<input type="range" class="custom-range" min="1" max="30" value="1" id="minRange" oninput="minOutputId.value = minRange.value">
+					Cell level: <output name="minOutputName" id="minOutputId">1</output> to <output name="maxOutputName" id="maxOutputId">30</output>
+					<input type="range" class="custom-range" min="1" max="30" value="1" id="minRange"
+						oninput="minOutputId.value = minRange.value; updateCellRangeMinMax(minRange);">
+					<input type="range" class="custom-range" min="1" max="30" value="30" id="maxRange"
+						oninput="maxOutputId.value = maxRange.value; updateCellRangeMinMax(maxRange);">
 
-					<label for="maxRange">Maximum Level</label>
-					<output name="maxOutputName" id="maxOutputId">30</output>
-					<input type="range" class="custom-range" min="1" max="30" value="30" id="maxRange" oninput="maxOutputId.value = maxRange.value">
-
-					<label for="maxCellsRange">Maximum Cells</label>
-					<output name="maxCellsOutputName" id="maxCellsOutputId">100</output>
-					<input type="range" class="custom-range" min="1" max="400" value="100" id="maxCellsRange" oninput="maxCellsOutputId.value = maxCellsRange.value">
+					<label for="maxCellsRange">Maximum cells:</label>
+					<output name="maxCellsOutputName" id="maxCellsOutputId">12</output>
+					<input type="range" class="custom-range" min="1" max="400" value="12" id="maxCellsRange" oninput="maxCellsOutputId.value = maxCellsRange.value">
 					<input type="radio" id="icover" name="cover" value="in">
 					<label for="icover">Inside</label>
+					&nbsp; &nbsp;
 					<input type="radio" id="ocover" name="cover" value="out" checked>
 					<label for="ocover">Outside</label><br>
 					<button onClick="coverShape()" id="coverButton"  class="btn btn-secondary" >Cover</button>
 				</div>
 				<div class="form-group">
-					<label for="cells_input">Insert cells IDs</label>
+					<label for="cells_input">Cells IDs:</label>
 					<textarea class="form-control" placeholder="47e665 or 2/0333030302 or 5180939472010739712" id="cells_input" rows="5"></textarea>
-					<a href='#' id='exportLink' style="visibility:hidden">Export Cells to GeoJSON</a>
+					<a href='#' id='exportLink' style="visibility:hidden">Export to GeoJSON</a>
 				</div>
 				<button onclick="displayCells()" id="cellsButton" class="btn btn-secondary">Display Cells</button>
 			</div>
@@ -112,9 +111,26 @@
 				}
 			}
 		}
+		function updateCellRangeMinMax(control) {
+			const minValue = parseInt(minRange.value);
+			const maxValue = parseInt(maxRange.value);
+			if (minValue > maxValue) {
+				if (control === maxRange) {
+					minRange.value = maxRange.value;
+					minOutputId.value = maxRange.value;
+				} else {
+					maxRange.value = minRange.value;
+					maxOutputId.value = minRange.value;
+				}
+			}
+		}
 		function handleUrlParams() {
-			if (window.location.hash) {
-				let params = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+			let textparams = (window.location.hash || "").replace(/^#/, "");
+			if (textparams == "") {
+				textparams = window.location.search || "";
+			}
+			if (textparams) {
+				let params = new URLSearchParams(textparams);
 				let cells = params.get("cells");
 				if (cells) {
 					document.getElementById("cells_input").value = cells;
@@ -226,8 +242,9 @@
 				}).addTo(mymap);
 				mymap.fitBounds(geoLayer.getBounds());
 			}
+			res.sort();
 			const cellText = res.join(",");
-			window.location.hash = "cells=" + cellText;
+			history.pushState({}, "", "?cells=" + cellText);
 			document.getElementById("cells_input").value = cellText;
 			document.getElementById("exportLink").style.visibility = res.length > 0 ?  "visible" : "hidden";
 		}
