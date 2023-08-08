@@ -1,16 +1,21 @@
 <!doctype html>
 <html>
-
 <head>
 	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<title>S2 Region Coverer</title>
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
-  integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
-  crossorigin=""/>
+		integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+		crossorigin=""/>
   	<link rel="stylesheet" href="https://unpkg.com/leaflet.pm@latest/dist/leaflet.pm.css" />
 	<style>
+	@media all and (max-width: 600px) {
+		#mapid { height: 50vh; }
+	}
+	@media all and (min-width: 601px) {
 		#mapid { height: 94vh; }
+	}
 	</style>
 	<!-- Place this tag in your head or just before your close body tag. -->
 	<script async defer src="https://buttons.github.io/buttons.js"></script>
@@ -27,8 +32,8 @@
 <body>
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap.native@2.0.15/dist/bootstrap-native-v4.min.js"></script>
 	<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
-  integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
-  crossorigin=""></script>
+		integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+		crossorigin=""></script>
   	<script src="https://unpkg.com/leaflet.pm@latest/dist/leaflet.pm.min.js"></script>
 	<script src="togeojson.js"></script>
 	<script src="leaflet.filelayer.js"></script>
@@ -38,9 +43,9 @@
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col">
-				<h3>S2 region coverer using Go code compiled into WASM</h3>
+				<h3>S2 region coverer</h3>
 			</div>
-			<div class="col-md-auto">
+			<div class="col-lg-auto">
 				<a class="github-button" href="https://github.com/igorgatis/ws2/fork" data-size="large" aria-label="Fork akhenakh/ws2 on GitHub">Fork</a>
 			</div>
 		</div>
@@ -66,10 +71,12 @@
 				</div>
 				<div class="form-group">
 					<label for="cells_input">Cells IDs:</label> <span id="cell_count">0</span>
-					<textarea class="form-control" placeholder="47e665 or 2/0333030302 or 5180939472010739712" id="cells_input" rows="5"></textarea>
+					<textarea class="form-control" placeholder="47e665 or 2/0333030302 or 5180939472010739712" id="cells_input" rows="4"></textarea>
 					<a href='#' id='exportLink' style="visibility:hidden">Export to GeoJSON</a>
 				</div>
-				<button onclick="displayCells()" id="cellsButton" class="btn btn-secondary">Display Cells</button>
+				<div class="form-group">
+					<button onclick="displayCells()" id="cellsButton" class="btn btn-secondary">Display Cells</button>
+				</div>
 			</div>
 		</div>
 		</div>
