@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Online viewer for S2 cells. Generates region coverings for shapes and polygons."/>
+  <meta name="description" content="Online viewer for S2 cells. Generates region coverings for shapes and polygons, and exports to GeoJSON."/>
 	<title>S2 Region Coverer</title>
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
@@ -101,9 +101,9 @@
 			if (geoLayer != null) {
 				mymap.removeLayer(geoLayer);
 			}
-			
+
 			const radioButtons = document.querySelectorAll('input[name="cover"]');
-			let converType; 
+			let converType;
 			for (const radioButton of radioButtons) {
                 if (radioButton.checked) {
                     converType = radioButton.value;
@@ -168,7 +168,7 @@
 			document.getElementById("coverButton").disabled = false;
 			document.getElementById("cellsButton").disabled = false;
 		});
-			
+
 
 		async function run() {
 			console.clear();
@@ -250,7 +250,13 @@
 					},
 					onEachFeature: function(feature, layer) {
 						if (feature.properties) {
-							layer.bindPopup(feature.properties.id + "<br>" + feature.properties.uid +  "<br>" + feature.properties.str + "<br>Level " + feature.properties.level);
+							var latlng = tokenlatlng(feature.properties.id);
+							var tooltip = [
+								"Token: " + feature.properties.id,
+								"Level " + feature.properties.level,
+								"Center: " + latlng.Lat.toFixed(7) + ", " + latlng.Lng.toFixed(7),
+							];
+							layer.bindPopup(tooltip.join("<br/>"));
 						}
 						res.push(feature.properties.id);
 					},

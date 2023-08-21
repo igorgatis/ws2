@@ -1,6 +1,27 @@
-.PHONY: all serve
+.PHONY: all clean help serve
 
-all: cmd/serve/serve docs/ws2.wasm
+## make help
+##   Shows this help.
+##
+help:
+	@cat $(MAKEFILE_LIST) | sed -n -e 's/^##\s\?//p' | grep --color -E 'make.*|$$'
+
+## make wasm
+##   Builds WASM binary.
+##
+wasm: docs/ws2.wasm
+
+## make serve
+##   Builds server and WASM binary and starts serving.
+##
+serve: docs/ws2.wasm cmd/serve/serve
+		./cmd/serve/serve
+
+## make clean
+##   Deletes build artifacts.
+##
+clean:
+	rm -f cmd/serve/serve docs/ws2.wasm
 
 cmd/serve/serve: cmd/serve/main.go
 	go build -o cmd/serve/serve cmd/serve/main.go
@@ -12,13 +33,3 @@ docs/ws2.wasm: main.go
 		--user=$$(id -u):$$(id -g) \
 		tinygo/tinygo ./tinygo.sh
 
-build-server: cmd/serve/serve
-
-all-serve: cmd/serve/serve docs/ws2.wasm
-		./cmd/serve/serve
-
-serve: build-server
-		./cmd/serve/serve
-
-clean:
-	rm -f cmd/serve/serve docs/ws2.wasm
