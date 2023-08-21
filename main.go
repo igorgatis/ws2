@@ -186,11 +186,22 @@ func registerCallbacks() {
 	js.Global().Set("circlecell", js.FuncOf(geoCircleToCells))
 	js.Global().Set("geocell", js.FuncOf(geoJSONToCells))
 	js.Global().Set("geofeaturescell", js.FuncOf(geoFeaturesJSONToCells))
+	js.Global().Set("tokenlatlng", js.FuncOf(getTokenLatLng))
 }
 
 func s2RadialAreaMeters(radius float64) float64 {
 	r := (radius / earthCircumferenceMeter) * math.Pi * 2
 	return math.Pi * r * r
+}
+
+func getTokenLatLng(this js.Value, i []js.Value) interface{} {
+	token := js.ValueOf(i[0]).String()
+	latlng := s2.CellIDFromToken(token).LatLng()
+	result := map[string]interface{}{
+		"Lat": latlng.Lat.Degrees(),
+		"Lng": latlng.Lng.Degrees(),
+	}
+	return js.ValueOf(result)
 }
 
 func main() {
