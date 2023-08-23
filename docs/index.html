@@ -264,8 +264,8 @@
 				mymap.fitBounds(geoLayer.getBounds());
 			}
 			res.sort();
-			const cellText = res.join(",");
-			history.pushState({}, "", "?cells=" + cellText);
+			const cellText = res.join(", ");
+			history.pushState({}, "", "?cells=" + cellText.replaceAll(/[\s,]+/g, ","));
 			document.getElementById("cell_count").textContent = res.length;
 			document.getElementById("cells_input").value = cellText;
 			document.getElementById("exportLink").style.visibility = res.length > 0 ?  "visible" : "hidden";
