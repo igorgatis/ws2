@@ -80,7 +80,7 @@
 
 		function displayCells() {
 			cinput = document.getElementById("cells_input").value;
-			clist = cinput.split(/[ ,]+/);
+			clist = cinput.split(/[\s,]+/);
 			if (geoLayer != null) {
 				mymap.removeLayer(geoLayer);
 			}
