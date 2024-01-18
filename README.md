@@ -6,5 +6,5 @@ Try: [https://igorgatis.github.io/ws2/#cells=07ab18a4854,07ab18a485c,07ab18a4864
 ![image](https://github.com/igorgatis/ws2/assets/1269388/68f2290d-2a81-4241-b8e3-31ea7a382a27)
 
 ## Previews Work
-There use to exist a very similar tool hosted at [s2.sidewalklabs.com/regioncoverer/](https://s2.sidewalklabs.com/regioncoverer/) but it is long gone now. I came across [Wasm with Go to build an S2 cover map viewer](https://blog.nobugware.com/post/2018/wasm_go_s2_javascript/) by Fabrice AkHeN which combines S2 Cell lib in Go and Wasm which can be seen at [s2.inair.space](https://s2.inair.space).
+There use to exist a very similar tool hosted at [s2.sidewalklabs.com/regioncoverer/](https://s2.sidewalklabs.com/regioncoverer/) but it is long gone now. I came across [Wasm with Go to build an S2 cover map viewer](https://blog.nobugware.com/post/2018/wasm_go_s2_javascript/) by Fabrice AkHeN which combines S2 Cell lib in Go and Wasm which can be seen at [s2.inair.space](https://s2.inair.space) and tweaked it a bit.
 
